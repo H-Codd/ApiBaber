@@ -10,6 +10,12 @@ use App\Http\Controllers\BarberController;
 Route::get('/ping', function() {
     return['pong' => true];
 });
+// 401
+Route::get('/401', [AuthController::class, 'unauthorized'])->name('login');
+
+// Random
+Route::get('/random', [BarberController::class, 'createRandom']);
+
 
 // Auth
 Route::post('/auth/login', [AuthController::class, 'login']);

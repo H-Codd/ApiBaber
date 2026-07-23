@@ -18,7 +18,7 @@ class User extends Authenticatable implements JWTSubject
 
     protected $hidden = ['password'];
 
-    public $timestamp = false;
+    public $timestamps = false;
 
     #[Override]
     public function getJWTIdentifier()

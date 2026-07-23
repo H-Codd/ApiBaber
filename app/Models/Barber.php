@@ -6,5 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Barber extends Model
 {
+   protected $table = 'babers';
    public $timestamps = false;
 }

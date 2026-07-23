@@ -3,18 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Laravel\Mcp\Request;
-
 class AuthController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
         return [
-            new Middleware('auth:api', except: ['create', 'login']),
+            new Middleware('auth:api', except: ['create', 'login', 'unauthorized']),
         ];
     }
     public function create(Request $request) {
@@ -26,7 +26,7 @@ class AuthController extends Controller implements HasMiddleware
             ]);
 
             if(!$validator->fails()) {
-                $name = $request->inout('name');
+                $name = $request->input('name');
                 $email = $request->input('email');
                 $password = $request->input('password');
 
@@ -63,4 +63,46 @@ class AuthController extends Controller implements HasMiddleware
             }
             return $array;
     }
+    public function login(Request $request) {
+        $array = ['error'=>''];  
+        $email = $request->input('email');
+        $password = $request->input('password');
+        $token = Auth::attempt([
+            'email' => $email,
+            'password' => $password
+        ]);
+
+        if(!$token) {
+            $array['error'] = 'Usuario ou senhas Invalidas';
+            return $array;
+        }
+
+        $info = Auth::user();
+        $array['data'] = $info;
+        $array['token'] = $token;
+        return $array;         
+    }
+    public function logout() {
+        Auth::logout();
+        return['error' => ''];
+    }
+    public function refresh() {
+        try {
+        $token = Auth::refresh();
+        $info = Auth::user();
+        return response()->json([
+            'data' => $info,
+            'token' => $token
+        ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Token refresh failed'], 401);
+        } 
+    }
+    public function unauthorized($request, AuthenticationException $exception) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Não autorizado'
+        ], 401);
+    }
+
 }
