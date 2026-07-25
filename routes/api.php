@@ -7,15 +7,16 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\BaberController;
 use App\Http\Controllers\BarberController;
 
+//Teste
 Route::get('/ping', function() {
     return['pong' => true];
 });
+
 // 401
 Route::get('/401', [AuthController::class, 'unauthorized'])->name('login');
 
 // Random
-Route::get('/random', [BarberController::class, 'createRandom']);
-
+// Route::get('/random', [BarberController::class, 'createRandom']);
 
 // Auth
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -26,8 +27,9 @@ Route::post('/user', [AuthController::class, 'create']);
 // User
 Route::get('/user', [UserController::class, 'read']);
 Route::put('/user', [UserController::class, 'update']);
+Route::put('/user/avatar', [UserController::class, 'updateAvatar']);
 Route::get('/user/favorites', [UserController::class, 'getFavorites']);
-Route::post('/user/favorite', [UserController::class, 'addFavorite']);
+Route::post('/user/favorite', [UserController::class, 'toggleFavorite']);
 Route::get('/user/appointments', [UserController::class, 'getAppointments']);
 
 // Barber

@@ -222,21 +222,48 @@ class BarberController extends Controller implements HasMiddleware
                             $newApp->id_user = $user->id;
                             $newApp->id_barber = $id;
                             $newApp->id_service = $service;
-                            $newApp->id_datetime = $apDate;
+                            $newApp->ap_datetime = $apDate;
                             $newApp->save();
+                            return $array['data'] = $newApp;
                         }else {
                             $array['error'] = 'Barbeiro não atende nesse Horário';
                         }
                     }else {
                         $array['error'] = 'Barbeiro não atende neste dia';
                     }
+                }else{
+                    $array['error'] = 'Já está marcado';
                 }
             } else {
                 $array['error'] = 'Data inválida';
             }
+        } else{
+            $array['error'] = 'serviço inexistente';
         }
         
         return $array;
-    } 
+    }
+    
+    public function search(Request $request) {
+        $array = ['error'=>'', 'list' => []];
+
+        $q = $request->input('q');
+
+        if($q) {
+
+            $barbers = Barber::where('name', 'LIKE', '%'.$q.'%')->get();
+
+            foreach($barbers as $bkey => $barber){
+                $barbers[$bkey]['avatar'] = url('media/avatars/'. $barbers[$bkey]['avatar']);
+            }
+        
+            $array['list'] = $barbers;
+
+        } else {
+            $array['error'] = 'Digite algo para Buscar';
+        }
+
+        return $array;
+    }
 
 }
